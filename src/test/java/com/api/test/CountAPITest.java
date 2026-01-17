@@ -1,5 +1,6 @@
 package com.api.test;
 
+import static com.api.constant.Role.FD;
 import static io.restassured.RestAssured.given;
 
 import static org.hamcrest.Matchers.*;
@@ -18,18 +19,14 @@ public class CountAPITest {
 	public void verifyCountAPIResponse() {
 		
 		given()
-		.baseUri(ConfigManager.getProperty("BASE_URI"))
-		.log().uri()
-		.log().method()
-		.log().headers()
-		.header("Authorization",AuthTokenProvider.getToken(Role.FD))
+		.spec(SpecUtil.requestSpecWithAuth(FD))
+		
 		.when()
 		.get("dashboard/count")
 		.then()
-		.log().all()
-		.statusCode(200)
+		.spec(SpecUtil.responseSpec_OK())
 		.body("message", equalTo("Success"))
-		.time(lessThan(1000L))
+		
 		.body("data",notNullValue())
 		.body("data.size()",equalTo(3))
 		.body("data.count", everyItem(greaterThanOrEqualTo(0)))
@@ -43,15 +40,13 @@ public class CountAPITest {
 	@Test
 	public void countAPITest_MissingAuthToken() {
 		given()
-		.baseUri(ConfigManager.getProperty("BASE_URI"))
-		.log().uri()
-		.log().method()
-		.log().headers()
+		.spec(SpecUtil.requestSpec())
+
 		.when()
 		.get("dashboard/count")
 		.then()
 		.log().all()
-		.statusCode(401);
+		.spec(SpecUtil.responseSpec_Text(401));
 		
 		
 	}

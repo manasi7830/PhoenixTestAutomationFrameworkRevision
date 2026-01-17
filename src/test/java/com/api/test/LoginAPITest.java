@@ -21,23 +21,13 @@ public class LoginAPITest {
 		
 		UserCredentials userCredentials = new UserCredentials("iamfd", "password") ;
 		given()
-			.baseUri(ConfigManager.getProperty("BASE_URI"))
-			.and()
-			.contentType(ContentType.JSON)
-			.and()
-			.accept(ContentType.JSON)
-			.and()
-			.body(userCredentials)
-			.log().uri()
-			.log().method()
-			.log().headers()
-			.log().body()
+			.spec(SpecUtil.requestSpec(userCredentials))
+			
+			
 			.when()
 			.post("login")
 			.then()
-			.log().all()
-			.statusCode(200)
-			.time(lessThan(3000L))
+			.spec(SpecUtil.responseSpec_OK())
 			.and()
 			.body("message", equalTo("Success"))
 			.and()

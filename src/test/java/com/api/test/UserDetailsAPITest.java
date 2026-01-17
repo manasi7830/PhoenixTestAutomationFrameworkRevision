@@ -25,20 +25,11 @@ public class UserDetailsAPITest {
 		
 		Header authHeader= new Header("Authorization",AuthTokenProvider.getToken(FD));
 		given()
-		.baseUri(getProperty("BASE_URI"))
-		.and()
-		.header(authHeader)
-		.and()
-		.accept(ContentType.JSON)
-		.log().uri()
-		.log().body()
-		.log().method()
+		.spec(SpecUtil.requestSpecWithAuth(FD))
 		.when()
 		.get("userdetails")
 		.then()
-		.log().all()
-		.statusCode(200)
-		.time(lessThan(2000L))
+		.spec(SpecUtil.responseSpec_OK())
 		.and()
 		.body(JsonSchemaValidator.matchesJsonSchemaInClasspath("response-schema/UserDetailsResponseSchema.json"));
 		

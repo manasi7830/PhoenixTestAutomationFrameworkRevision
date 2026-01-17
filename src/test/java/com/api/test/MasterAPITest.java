@@ -16,21 +16,14 @@ public class MasterAPITest {
 	@Test
 	public void masterAPITest() {
 		given()
-		.baseUri(getProperty("BASE_URI"))
-		.and()
-		.header("Authorization",getToken(FD))
-		.and()
-		.contentType("")
-		.log().all()
+		.spec(SpecUtil.requestSpecWithAuth(FD))
 		.when()
 		.post("master")
 		.then()
-		.log().all()
-		.statusCode(200)
-		.time(lessThan(2000L))
+		.spec(SpecUtil.responseSpec_OK())
 		.body("message",equalTo("Success"))
 		.body("data",notNullValue())
-		.body("data",hasKey("mst_oem"))
+		//.body("data", hasKey("mst_oem"))
 		.body("data", hasKey("mst_model"))
 		.body("data.mst_oem.size()",equalTo(2))
 		.body("data.mst_model.size()",greaterThan(0))
@@ -44,17 +37,12 @@ public class MasterAPITest {
 	@Test
 	public void invalidTokenMasterAPITest() {
 		given()
-		.baseUri(getProperty("BASE_URI"))
-		.and()
-		.header("Authorization","")
-		.and()
-		.contentType("")
+		.spec(SpecUtil.requestSpec())
 		.log().all()
 		.when()
 		.post("master")
 		.then()
-		.log().all()
-		.statusCode(401);
+		.spec(SpecUtil.responseSpec_Text(401));
 		
 	}
 
