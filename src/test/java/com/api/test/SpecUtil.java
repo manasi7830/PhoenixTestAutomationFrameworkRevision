@@ -5,7 +5,7 @@ import static com.api.utils.ConfigManager.*;
 import org.hamcrest.Matchers;
 
 import com.api.constant.Role;
-import com.api.pojo.UserCredentials;
+import com.api.request.model.UserCredentials;
 import com.api.utils.AuthTokenProvider;
 
 import io.restassured.builder.RequestSpecBuilder;
