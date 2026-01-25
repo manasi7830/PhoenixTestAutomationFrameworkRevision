@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import com.api.constant.Model;
@@ -25,27 +26,33 @@ import com.api.request.model.Problems;
 import static com.api.utils.DateTimeUtil.*;
 
 import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static com.api.test.SpecUtil.*;
 
 public class CreateJobAPITest {
 	
-	@Test
-	public void createJobAPITest() {
-		
+	private CreateJobPayload createJobPayload;
 	
+	@BeforeMethod (description = "Creating createjob api request payload")
+	public void setUp() {
 		Customer customer=new Customer("Manasi","Avachat","9767145100"," ","manasiavachat14@gmail.com","");
 		CustomerAddress customerAddress=new CustomerAddress("20B","Atria","HMT","Jalahalli","Bangalore","560013","India","Karnataka");
-		CustomerProduct customerProduct=new CustomerProduct(getTimeWithDayAgo(10),"55118034553133","55118034553133","55118034553133",getTimeWithDayAgo(10),Product.NEXUS_2.getCode(),Model.NEXUS_2_BLUE.getCode());
+		CustomerProduct customerProduct=new CustomerProduct(getTimeWithDayAgo(10),"88118034553133","88118034553133","88118034553133",getTimeWithDayAgo(10),Product.NEXUS_2.getCode(),Model.NEXUS_2_BLUE.getCode());
 		Problems problems=new Problems(Problem.POOR_BATTERY_LIFE.getCode(),"Battery Issue");
 		List<Problems> problemList=new ArrayList<Problems>();
 		problemList.add(problems);
-		CreateJobPayload createJobPayload=new CreateJobPayload(ServiceLocation.SERVICE_LOCATION_A.getCode(),Platform.FRONT_DESK.getCode() ,Warrenty_Status.IN_WARRENTY.getCode() ,OEM.GOOGLE.getCode(), customer, customerAddress, customerProduct, problemList);
+		createJobPayload=new CreateJobPayload(ServiceLocation.SERVICE_LOCATION_A.getCode(),Platform.FRONT_DESK.getCode() ,Warrenty_Status.IN_WARRENTY.getCode() ,OEM.GOOGLE.getCode(), customer, customerAddress, customerProduct, problemList);
 		
+	}
+	
+	@Test (description = "Verifying if the Create job api is able to create Inwrranty job ",groups= {"api","regression","smoke"})
+	public void createJobAPITest() {
+	
 		given()
-		.spec(SpecUtil.requestSpecWithAuth(Role.FD, createJobPayload))
+		.spec(requestSpecWithAuth(Role.FD, createJobPayload))
 		.when()
 		.post("job/create")
 		.then()
-		.spec(SpecUtil.responseSpec_OK())
+		.spec(responseSpec_OK())
 		.body(matchesJsonSchemaInClasspath("response-schema/CreateJobAPIResponseSchema.json"))
 		.body("message",equalTo("Job created successfully. "))
 		.body("data.mst_service_location_id",equalTo(1))

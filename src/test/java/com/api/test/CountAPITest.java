@@ -12,32 +12,33 @@ import com.api.constant.Role;
 import com.api.utils.AuthTokenProvider;
 import com.api.utils.ConfigManager;
 
-import io.restassured.module.jsv.JsonSchemaValidator;
+import static io.restassured.module.jsv.JsonSchemaValidator.*;
+import static com.api.test.SpecUtil.*;
 
 public class CountAPITest {
-	@Test
+	@Test (description = "Verifying if the Count api is giving correct response ",groups= {"api","regression","smoke"})
 	public void verifyCountAPIResponse() {
 		
 		given()
-		.spec(SpecUtil.requestSpecWithAuth(FD))
+		.spec(requestSpecWithAuth(FD))
 		
 		.when()
 		.get("dashboard/count")
 		.then()
-		.spec(SpecUtil.responseSpec_OK())
+		.spec(responseSpec_OK())
 		.body("message", equalTo("Success"))
 		
 		.body("data",notNullValue())
 		.body("data.size()",equalTo(3))
 		.body("data.count", everyItem(greaterThanOrEqualTo(0)))
 		.body("data.label",everyItem(Matchers.not(Matchers.blankOrNullString())))
-		.body(JsonSchemaValidator.matchesJsonSchemaInClasspath("response-schema\\CountAPIResponse-FD.json"))
+		.body(matchesJsonSchemaInClasspath("response-schema\\CountAPIResponse-FD.json"))
 		.body("data.key",containsInAnyOrder("pending_for_delivery","created_today","pending_fst_assignment"));
 		
 		
 		
 	}
-	@Test
+	@Test (description = "Verifying if the count api is giving correct status code for invalid token ",groups= {"api","negative","regression","smoke"})
 	public void countAPITest_MissingAuthToken() {
 		given()
 		.spec(SpecUtil.requestSpec())
